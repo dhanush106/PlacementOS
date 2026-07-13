@@ -1,0 +1,253 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --sage-primary: 136 189 164;
+    --sage-dark: 77 118 106;
+    --sage-medium: 169 207 180;
+    --sage-light: 220 232 211;
+    --color-bg: 244 248 243;
+    --color-surface: 255 255 255;
+    --color-elevated: 250 253 249;
+    --color-border: 199 218 204;
+    --color-divider: 218 231 219;
+    --color-text-primary: 31 50 45;
+    --color-text-secondary: 83 106 98;
+    --color-text-muted: 117 139 130;
+    --color-primary: var(--sage-primary);
+    --color-primary-dark: var(--sage-dark);
+    --color-primary-light: var(--sage-medium);
+    --color-success: 95 143 103;
+    --color-warning: 139 132 78;
+    --color-danger: 151 87 75;
+    --color-info: 100 139 129;
+    --color-progress: var(--sage-primary);
+    --shadow-color: 64 99 87;
+    --slate-50: 252 254 251;
+    --slate-100: 244 248 243;
+    --slate-200: 232 240 229;
+    --slate-300: 214 228 216;
+    --slate-400: 151 174 164;
+    --slate-500: 117 139 130;
+    --slate-600: 83 106 98;
+    --slate-700: 57 78 71;
+    --slate-800: 199 218 204;
+    --slate-850: 181 206 190;
+    --slate-900: 255 255 255;
+    --slate-950: 238 246 237;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --color-bg: 23 36 32;
+    --color-surface: 34 51 46;
+    --color-elevated: 42 63 57;
+    --color-border: 83 117 106;
+    --color-divider: 57 85 76;
+    --color-text-primary: 237 246 239;
+    --color-text-secondary: 195 216 204;
+    --color-text-muted: 150 177 164;
+    --color-primary: 136 189 164;
+    --color-primary-dark: 169 207 180;
+    --color-primary-light: 220 232 211;
+    --color-success: 169 207 180;
+    --color-warning: 202 198 143;
+    --color-danger: 211 142 126;
+    --color-info: 169 207 180;
+    --color-progress: 136 189 164;
+    --shadow-color: 8 18 15;
+    --slate-50: 237 246 239;
+    --slate-100: 217 232 220;
+    --slate-200: 195 216 204;
+    --slate-300: 169 197 184;
+    --slate-400: 150 177 164;
+    --slate-500: 126 154 142;
+    --slate-600: 100 128 117;
+    --slate-700: 73 100 90;
+    --slate-800: 57 85 76;
+    --slate-850: 46 70 63;
+    --slate-900: 34 51 46;
+    --slate-950: 23 36 32;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    background: rgb(var(--color-bg));
+    transition: background-color 260ms ease, color 260ms ease;
+  }
+
+  body {
+    @apply bg-background text-white antialiased font-sans selection:bg-primary/25 selection:text-white;
+    min-height: 100vh;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply placeholder:text-slate-500 transition;
+    background: rgb(var(--color-surface) / 0.58);
+    border-color: rgb(var(--color-border) / 0.76);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.38);
+  }
+
+  input:hover,
+  select:hover,
+  textarea:hover {
+    border-color: rgb(var(--color-primary) / 0.48);
+  }
+
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  th {
+    @apply text-slate-500;
+  }
+
+  tr {
+    @apply transition-colors;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--color-bg));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-primary) / 0.35);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-primary) / 0.58);
+}
+
+.app-surface {
+  position: relative;
+  overflow-x: clip;
+  background:
+    radial-gradient(circle at 12% 10%, rgb(var(--sage-light) / 0.72), transparent 28rem),
+    radial-gradient(circle at 86% 8%, rgb(var(--sage-primary) / 0.26), transparent 30rem),
+    radial-gradient(circle at 70% 88%, rgb(var(--sage-medium) / 0.32), transparent 34rem),
+    linear-gradient(135deg, rgb(var(--color-bg)), rgb(249 252 247) 52%, rgb(236 245 234));
+}
+
+.dark .app-surface {
+  background:
+    radial-gradient(circle at 12% 10%, rgb(var(--sage-dark) / 0.26), transparent 28rem),
+    radial-gradient(circle at 86% 8%, rgb(var(--sage-primary) / 0.18), transparent 30rem),
+    radial-gradient(circle at 70% 88%, rgb(var(--sage-medium) / 0.12), transparent 34rem),
+    linear-gradient(135deg, rgb(var(--color-bg)), rgb(28 45 40) 52%, rgb(20 34 30));
+}
+
+.app-surface::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgb(var(--sage-dark) / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--sage-dark) / 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(circle at center, black, transparent 82%);
+}
+
+.glassmorphism,
+.premium-card {
+  background: linear-gradient(145deg, rgb(var(--color-surface) / 0.76), rgb(var(--color-elevated) / 0.48));
+  border: 1px solid rgb(var(--color-border) / 0.62);
+  box-shadow:
+    0 24px 70px -46px rgb(var(--shadow-color) / 0.62),
+    inset 0 1px 0 rgb(255 255 255 / 0.62);
+  backdrop-filter: blur(16px) saturate(1.12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.12);
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+}
+
+.premium-card:hover {
+  transform: translateY(-2px);
+  border-color: rgb(var(--color-primary) / 0.42);
+  box-shadow:
+    0 30px 80px -48px rgb(var(--shadow-color) / 0.74),
+    inset 0 1px 0 rgb(255 255 255 / 0.72);
+}
+
+.shadow-paper {
+  box-shadow: 0 24px 70px -46px rgb(var(--shadow-color) / 0.62);
+}
+
+.shadow-tactile,
+.tactile-button {
+  box-shadow: 0 14px 30px -18px rgb(var(--shadow-color) / 0.86);
+}
+
+.tactile-button {
+  @apply transition duration-200 hover:-translate-y-0.5 active:translate-y-0;
+}
+
+.text-gradient {
+  color: rgb(var(--color-primary-dark));
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled),
+a[href] {
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+  transition-duration: 180ms;
+  transition-timing-function: ease;
+}
+
+.bg-primary.text-white,
+.bg-primary .text-white,
+.bg-primary-dark.text-white,
+.bg-emerald-600.text-white,
+.bg-red-500.text-white,
+.bg-red-600.text-white,
+.bg-amber-600.text-white {
+  color: rgb(255 255 255) !important;
+}
+
+.recharts-cartesian-grid line {
+  stroke: rgb(var(--color-border) / 0.58);
+}
+
+.recharts-default-legend {
+  color: rgb(var(--color-text-muted));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

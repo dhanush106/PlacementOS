@@ -1,0 +1,66 @@
+import mongoose from 'mongoose';
+import logger from '../utils/logger.js';
+import Quote from '../models/Quote.js';
+
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/PlacementOS';
+
+const initialQuotes = [
+  { text: 'Your consistency today is your competitive advantage tomorrow.', author: 'TrackForge' },
+  { text: 'Every problem solved brings you closer to your dream role.', author: 'TrackForge' },
+  { text: 'Progress is progress, no matter how small.', author: 'TrackForge' },
+  { text: 'The secret of getting ahead is getting started.', author: 'Mark Twain' },
+  { text: 'It always seems impossible until it is done.', author: 'Nelson Mandela' },
+  { text: 'Don’t watch the clock; do what it does. Keep going.', author: 'Sam Levenson' },
+  { text: 'Quality is not an act, it is a habit.', author: 'Aristotle' },
+  { text: 'Believe you can and you are halfway there.', author: 'Theodore Roosevelt' }
+];
+
+async function seedQuotes() {
+  try {
+    const count = await Quote.countDocuments();
+    if (count === 0) {
+      await Quote.insertMany(initialQuotes);
+      logger.info('Predefined motivation quotes seeded successfully.');
+    }
+  } catch (err) {
+    logger.error('Failed to seed motivation quotes:', err);
+  }
+}
+
+export const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(MONGO_URI, {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+
+    logger.info(`MongoDB Connected: ${conn.connection.host}`);
+
+    // Seed initial data
+    await seedQuotes();
+
+    return conn;
+  } catch (error) {
+    logger.error(`Database Connection Error: ${error.message}`);
+    // Retry connection after 5 seconds
+    logger.info('Retrying connection in 5 seconds...');
+    setTimeout(connectDB, 5000);
+  }
+};
+
+export const checkDatabaseHealth = () => {
+  const state = mongoose.connection.readyState;
+  const states = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting',
+  };
+
+  return {
+    status: state === 1 ? 'healthy' : 'unhealthy',
+    state: states[state],
+    dbName: mongoose.connection.name
+  };
+};
