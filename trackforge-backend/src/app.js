@@ -28,18 +28,23 @@ const allowedOrigins = (
 
 const corsOptions = {
   origin(origin, callback) {
-    // Allow requests without Origin (Postman, curl, health checks)
+    console.log("Incoming Origin:", origin);
+    console.log("Allowed Origins:", allowedOrigins);
+
     if (!origin) {
-      return callback(null, true);
+        console.log("No origin");
+        return callback(null, true);
     }
 
     if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
+        console.log("✅ Allowed:", origin);
+        return callback(null, true);
     }
 
-    console.error(`❌ Blocked CORS request from: ${origin}`);
-    return callback(new Error("Not allowed by CORS"));
-  },
+    console.log("❌ Blocked:", origin);
+
+    callback(new Error("Not allowed by CORS"));
+},
 
   credentials: true,
 
@@ -69,7 +74,8 @@ app.options('*', cors(corsOptions));
 // Security Headers
 app.use(
   helmet({
-    crossOriginResourcePolicy: false
+    crossOriginResourcePolicy: false,
+    crossOriginEmbedderPolicy: false
   })
 );
 
