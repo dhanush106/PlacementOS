@@ -27,37 +27,39 @@ async function seedQuotes() {
     logger.error('Failed to seed motivation quotes:', err);
   }
 }
-
 export const connectDB = async () => {
+  console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
+  console.log("Connecting to MongoDB...");
+
   if (mongoose.connection.readyState === 1) {
+    console.log("Already connected");
     return mongoose.connection;
   }
 
   if (mongoose.connection.readyState === 2) {
+    console.log("Already connecting");
     return mongoose.connection;
   }
 
   try {
-    const conn = await mongoose.connect(MONGO_URI, {
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     });
 
-    logger.info(`MongoDB Connected: ${conn.connection.host}`);
+    console.log("✅ MongoDB Connected");
+    console.log("Host:", conn.connection.host);
 
     await seedQuotes();
 
     return conn;
-
   } catch (err) {
-
-    logger.error("MongoDB connection failed:", err);
-
-    // VERY IMPORTANT
+    console.error("❌ MongoDB Error:", err);
     throw err;
   }
 };
+
 
 export const checkDatabaseHealth = () => {
   const state = mongoose.connection.readyState;
