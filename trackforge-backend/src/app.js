@@ -17,26 +17,9 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { checkDatabaseHealth } from './config/database.js';
 
 const app = express();
-const defaultAllowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://placement-os-rmrw.vercel.app', 'https://placement-os-seven.vercel.app'];
-const allowedOrigins = (process.env.CORS_ORIGIN || defaultAllowedOrigins.join(',')).split(',').map((origin) => origin.trim()).filter(Boolean);
-
-const isAllowedOrigin = (origin) => {
-  if (!origin) return true;
-
-  if (allowedOrigins.includes(origin)) return true;
-
-  return /https:\/\/([a-z0-9-]+\.)?vercel\.app$/i.test(origin);
-};
 
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (isAllowedOrigin(origin)) {
-      callback(null, true);
-      return;
-    }
-
-    callback(new Error('Not allowed by CORS'));
-  },
+  origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
@@ -54,24 +37,6 @@ app.use(
 app.use('/uploads', express.static('uploads'));
 
 // CORS Configuration
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  if (isAllowedOrigin(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-  }
-
-  if (req.method === 'OPTIONS') {
-    res.status(204).end();
-    return;
-  }
-
-  next();
-});
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
