@@ -2,8 +2,10 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-// Ensure uploads directory exists
-const uploadDir = 'uploads/avatars/';
+const isProduction = process.env.NODE_ENV === 'production';
+const uploadDir = isProduction ? '/tmp/uploads/avatars' : path.resolve('uploads/avatars');
+
+// Ensure the upload directory exists locally, and use a temp location in production.
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
