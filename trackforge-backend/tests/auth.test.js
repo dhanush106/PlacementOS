@@ -25,6 +25,26 @@ afterAll(async () => {
   }
 });
 
+describe('CORS preflight handling', () => {
+  test('OPTIONS /api/auth/login should allow the deployed frontend origin and local Vite origin', async () => {
+    const deployedRes = await request(app)
+      .options('/api/auth/login')
+      .set('Origin', 'https://placement-os-rmrw.vercel.app')
+      .set('Access-Control-Request-Method', 'POST');
+
+    expect(deployedRes.statusCode).toBe(204);
+    expect(deployedRes.headers['access-control-allow-origin']).toBe('https://placement-os-rmrw.vercel.app');
+
+    const localRes = await request(app)
+      .options('/api/auth/login')
+      .set('Origin', 'http://localhost:5173')
+      .set('Access-Control-Request-Method', 'POST');
+
+    expect(localRes.statusCode).toBe(204);
+    expect(localRes.headers['access-control-allow-origin']).toBe('http://localhost:5173');
+  });
+});
+
 describe('Authentication Flow Integration Tests', () => {
   // Skip tests if database is not connected
   const runTests = () => mongoose.connection.readyState === 1;

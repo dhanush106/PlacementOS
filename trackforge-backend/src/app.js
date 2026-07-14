@@ -17,6 +17,22 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { checkDatabaseHealth } from './config/database.js';
 
 const app = express();
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173,https://placement-os-rmrw.vercel.app').split(',').map((origin) => origin.trim()).filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 204
+};
 
 // Security Headers
 app.use(
@@ -29,15 +45,8 @@ app.use(
 app.use('/uploads', express.static('uploads'));
 
 // CORS Configuration
-app.use(
-  cors({
-    origin: 'https://placement-os-rmrw.vercel.app' || 'http://localhost:5173',
-    // origin: '*', // Allow all origins for development; change in production
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  })
-);
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Body Parser
 app.use(express.json());
