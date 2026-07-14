@@ -9,6 +9,11 @@ import { sendSuccess, sendPaginated } from '../utils/response.js';
 import { NotFoundError, ValidationError } from '../utils/errors.js';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const STRIVER_SHEET_PATH = path.join(__dirname, '..', 'config', 'striverA2ZSheet.json');
 
 // Fetch user's logged problems & roadmap explorer
 export const getProblems = async (req, res, next) => {
@@ -157,8 +162,7 @@ export const deleteProblem = async (req, res, next) => {
 // Get A2Z Striver roadmap overlayed with progress
 export const getStriverSheet = async (req, res, next) => {
   try {
-    const seedPath = 'c:/Users/sarpo/OneDrive/Desktop/PlacementOS/trackforge-backend/src/config/striverA2ZSheet.json';
-    const seedProblems = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+    const seedProblems = JSON.parse(fs.readFileSync(STRIVER_SHEET_PATH, 'utf8'));
 
     const userProblems = await LeetcodeProblem.find({ userId: req.user.userId });
     const userMap = {};

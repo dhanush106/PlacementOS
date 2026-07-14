@@ -3,6 +3,7 @@ import logger from '../utils/logger.js';
 import Quote from '../models/Quote.js';
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/PlacementOS';
+let reconnectTimer = null;
 
 const initialQuotes = [
   { text: 'Your consistency today is your competitive advantage tomorrow.', author: 'TrackForge' },
@@ -28,6 +29,14 @@ async function seedQuotes() {
 }
 
 export const connectDB = async () => {
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
+  if (mongoose.connection.readyState === 2) {
+    return mongoose.connection;
+  }
+
   try {
     const conn = await mongoose.connect(MONGO_URI, {
       maxPoolSize: 10,
@@ -43,9 +52,14 @@ export const connectDB = async () => {
     return conn;
   } catch (error) {
     logger.error(`Database Connection Error: ${error.message}`);
-    // Retry connection after 5 seconds
-    logger.info('Retrying connection in 5 seconds...');
-    setTimeout(connectDB, 5000);
+
+    if (!reconnectTimer) {
+      logger.info('Retrying connection in 5 seconds...');
+      reconnectTimer = setTimeout(() => {
+        reconnectTimer = null;
+        connectDB().catch(() => {});
+      }, 5000);
+    }
   }
 };
 
