@@ -16,15 +16,30 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
+// export const ensureDatabaseConnection = async () => {
+//   if (dbInitialized) return;
+
+//   dbInitialized = true;
+
+//   try {
+//     await connectDB();
+//   } catch (error) {
+//     logger.error('Database initialization failed:', error);
+//   }
+// };
 export const ensureDatabaseConnection = async () => {
   if (dbInitialized) return;
+
+  console.log("Connecting to MongoDB...");
 
   dbInitialized = true;
 
   try {
     await connectDB();
+    console.log("MongoDB connected");
   } catch (error) {
-    logger.error('Database initialization failed:', error);
+    console.error("MongoDB connection failed:", error);
+    logger.error("Database initialization failed:", error);
   }
 };
 
