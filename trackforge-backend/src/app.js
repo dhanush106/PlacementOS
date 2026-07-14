@@ -31,8 +31,8 @@ app.use('/uploads', express.static('uploads'));
 // CORS Configuration
 app.use(
   cors({
-    // origin: 'https://placement-os-seven.vercel.app' || 'http://localhost:5173',
-    origin: '*', // Allow all origins for development; change in production
+    origin: 'https://placement-os-rmrw.vercel.app' || 'http://localhost:5173',
+    // origin: '*', // Allow all origins for development; change in production
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
