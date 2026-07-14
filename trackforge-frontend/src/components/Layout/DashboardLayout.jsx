@@ -6,7 +6,7 @@ import { useTheme } from '../../context/ThemeContext.jsx';
 import {
   BarChart3, BookOpen, CheckSquare, Code, Flame, LayoutDashboard,
   Layers, LogOut, Menu, Moon, PanelLeftClose, PanelLeftOpen, Search,
-  Settings, Sparkles, Sun, Timer, Trello, X
+  Settings, Sparkles, Sun, Timer, Trello, User, X
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -168,10 +168,10 @@ const DashboardLayout = ({ children }) => {
           className="flex w-full items-center gap-3 rounded-2xl border border-border/70 bg-surface/45 p-3 text-left hover:-translate-y-0.5 hover:border-primary/40"
         >
           <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/80 bg-background">
-            {user?.avatar ? (
-              <img src={user.avatar.startsWith('/') ? `http://localhost:5000${user.avatar}` : user.avatar} alt="" className="h-full w-full object-cover" />
+            {user?.name ? (
+              <span className="text-sm font-black text-primary">{user.name.charAt(0).toUpperCase()}</span>
             ) : (
-              <Settings size={16} className="text-slate-500" />
+              <User size={16} className="text-slate-500" />
             )}
           </div>
           {!collapsed && (

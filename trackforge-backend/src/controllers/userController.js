@@ -102,34 +102,6 @@ export const deleteAccount = async (req, res, next) => {
   }
 };
 
-export const uploadAvatar = async (req, res, next) => {
-  try {
-    if (!req.file) {
-      throw new ValidationError('Please upload an avatar image file');
-    }
-
-    const user = await User.findById(req.user.userId);
-    if (!user) {
-      throw new NotFoundError('User not found');
-    }
-
-    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
-    user.avatar = avatarUrl;
-    await user.save();
-
-    await AuditLog.create({
-      userId: user._id,
-      eventType: 'avatar_upload',
-      description: 'Uploaded new avatar image',
-      ipAddress: req.ip
-    });
-
-    return sendSuccess(res, user, 'Avatar uploaded successfully');
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const changeEmail = async (req, res, next) => {
   try {
     const { newEmail, password } = req.body;

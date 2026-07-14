@@ -3,7 +3,7 @@ import api from '../utils/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import {
-  User, Mail, Trash2, Camera, ShieldAlert, CheckCircle2,
+  User, Mail, Trash2, ShieldAlert,
   AlertTriangle, KeyRound, Briefcase, GraduationCap, MapPin, Phone
 } from 'lucide-react';
 
@@ -24,7 +24,6 @@ const Settings = () => {
 
   // UI States
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [toast, setToast] = useState({ show: false, msg: '', error: false });
 
   const showToast = (msg, error = false) => {
@@ -76,39 +75,6 @@ const Settings = () => {
       showToast(msg, true);
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Handle Avatar Upload
-  const handleAvatarUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('File size exceeds 5MB limit', true);
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('avatar', file);
-
-    setUploading(true);
-    try {
-      const res = await api.post('/users/avatar', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-
-      // Update local storage user profile cache
-      const updatedUser = { ...user, avatar: res.data.data.avatar };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      // Re-trigger global auth state refresh
-      window.location.reload();
-      showToast('Avatar updated! 📸');
-    } catch (err) {
-      const msg = err.response?.data?.error?.message || 'Failed to upload avatar';
-      showToast(msg, true);
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -173,25 +139,21 @@ const Settings = () => {
         <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
           Profile Settings
         </h1>
-        <p className="text-sm text-slate-400 mt-1">Manage your developer profile, avatar and account credentials.</p>
+        <p className="text-sm text-slate-400 mt-1">Manage your developer profile and account credentials.</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {/* Left Column: Avatar & Quick Stats */}
+        {/* Left Column: Profile Summary */}
         <div className="space-y-6">
           <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/40 text-center space-y-4">
             <div className="relative inline-block">
               <div className="w-24 h-24 rounded-full bg-slate-850 border-2 border-slate-800 flex items-center justify-center overflow-hidden mx-auto shadow-inner">
-                {user?.avatar ? (
-                  <img src={user.avatar.startsWith('/') ? `${api.defaults.baseURL.replace('/api', '')}${user.avatar}` : user.avatar} alt="avatar" className="w-full h-full object-cover" />
+                {user?.name ? (
+                  <span className="text-4xl font-black text-primary">{user.name.charAt(0).toUpperCase()}</span>
                 ) : (
                   <User size={36} className="text-slate-500" />
                 )}
               </div>
-              <label htmlFor="avatar-file" className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary hover:bg-primary-dark text-white border-2 border-slate-900 flex items-center justify-center cursor-pointer shadow transition-all duration-200">
-                <Camera size={14} />
-              </label>
-              <input type="file" id="avatar-file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={uploading} />
             </div>
             <div>
               <h2 className="text-base font-bold text-white">{user?.name || 'Developer'}</h2>

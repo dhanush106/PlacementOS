@@ -7,7 +7,7 @@ const Login = () => {
   const { loginUser } = useAuth();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
+  const [formState, setFormState] = useState({
     email: '',
     password: '',
     rememberMe: false
@@ -18,7 +18,7 @@ const Login = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormState(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
@@ -28,14 +28,14 @@ const Login = () => {
     e.preventDefault();
     setError('');
 
-    if (!formData.email || !formData.password) {
+    if (!formState.email || !formState.password) {
       setError('Please fill in all fields.');
       return;
     }
 
     setLoading(true);
     try {
-      await loginUser(formData.email, formData.password, formData.rememberMe);
+      await loginUser(formState.email, formState.password, formState.rememberMe);
       navigate('/');
     } catch (err) {
       const errData = err.response?.data?.error;
@@ -46,7 +46,7 @@ const Login = () => {
           <span>
             Your email is not verified yet.{' '}
             <Link
-              to={`/verify-email?email=${encodeURIComponent(formData.email)}`}
+              to={`/verify-email?email=${encodeURIComponent(formState.email)}`}
               className="text-primary hover:underline font-semibold"
             >
               Verify Email
@@ -79,7 +79,7 @@ const Login = () => {
             <input
               type="email"
               name="email"
-              value={formData.email}
+              value={formState.email}
               onChange={handleInputChange}
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition"
               placeholder="name@college.edu"
@@ -97,7 +97,7 @@ const Login = () => {
             <input
               type="password"
               name="password"
-              value={formData.password}
+              value={formState.password}
               onChange={handleInputChange}
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition"
               placeholder="••••••••"
@@ -110,7 +110,7 @@ const Login = () => {
               type="checkbox"
               id="rememberMe"
               name="rememberMe"
-              checked={formData.rememberMe}
+              checked={formState.rememberMe}
               onChange={handleInputChange}
               className="w-4 h-4 rounded border-slate-800 bg-slate-950 text-primary focus:ring-primary focus:ring-opacity-25"
             />

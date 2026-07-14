@@ -73,11 +73,6 @@ app.use(
   })
 );
 
-// Serve Static Uploads
-app.use('/uploads', express.static('uploads'));
-
-
-
 // Body Parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

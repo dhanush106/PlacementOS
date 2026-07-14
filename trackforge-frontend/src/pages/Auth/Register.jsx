@@ -7,7 +7,7 @@ const Register = () => {
   const { registerUser } = useAuth();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
+  const [formState, setFormState] = useState({
     name: '',
     email: '',
     password: '',
@@ -59,7 +59,7 @@ const Register = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormState(prev => ({ ...prev, [name]: value }));
     if (name === 'password') {
       checkPasswordStrength(value);
     }
@@ -70,12 +70,12 @@ const Register = () => {
     setError('');
 
     // Check basic validations
-    if (!formData.name || !formData.email || !formData.password || !formData.passwordConfirm) {
+    if (!formState.name || !formState.email || !formState.password || !formState.passwordConfirm) {
       setError('Please fill in all required fields.');
       return;
     }
 
-    if (formData.password !== formData.passwordConfirm) {
+    if (formState.password !== formState.passwordConfirm) {
       setError('Passwords do not match.');
       return;
     }
@@ -88,14 +88,14 @@ const Register = () => {
     setLoading(true);
     try {
       await registerUser(
-        formData.email,
-        formData.name,
-        formData.password,
-        formData.college,
-        formData.targetRole
+        formState.email,
+        formState.name,
+        formState.password,
+        formState.college,
+        formState.targetRole
       );
       // Redirect to Verify OTP
-      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+      navigate(`/verify-email?email=${encodeURIComponent(formState.email)}`);
     } catch (err) {
       const errMsg = err.response?.data?.error?.message || 'Registration failed. Please try again.';
       setError(errMsg);
@@ -123,7 +123,7 @@ const Register = () => {
               <input
                 type="text"
                 name="name"
-                value={formData.name}
+                value={formState.name}
                 onChange={handleInputChange}
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition"
                 placeholder="John Doe"
@@ -135,7 +135,7 @@ const Register = () => {
               <input
                 type="email"
                 name="email"
-                value={formData.email}
+                value={formState.email}
                 onChange={handleInputChange}
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition"
                 placeholder="name@college.edu"
@@ -150,7 +150,7 @@ const Register = () => {
               <input
                 type="text"
                 name="college"
-                value={formData.college}
+                value={formState.college}
                 onChange={handleInputChange}
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition"
                 placeholder="e.g. IIT Delhi"
@@ -161,7 +161,7 @@ const Register = () => {
               <input
                 type="text"
                 name="targetRole"
-                value={formData.targetRole}
+                value={formState.targetRole}
                 onChange={handleInputChange}
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition"
                 placeholder="e.g. Software Engineer"
@@ -174,13 +174,13 @@ const Register = () => {
             <input
               type="password"
               name="password"
-              value={formData.password}
+              value={formState.password}
               onChange={handleInputChange}
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition"
               placeholder="••••••••"
               required
             />
-            {formData.password && (
+            {formState.password && (
               <div className="mt-2 space-y-1">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-slate-400">Password Strength: {strength.label}</span>
@@ -205,7 +205,7 @@ const Register = () => {
             <input
               type="password"
               name="passwordConfirm"
-              value={formData.passwordConfirm}
+              value={formState.passwordConfirm}
               onChange={handleInputChange}
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary transition"
               placeholder="••••••••"

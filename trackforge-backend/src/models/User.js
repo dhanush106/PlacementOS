@@ -43,10 +43,6 @@ const UserSchema = new mongoose.Schema(
     preferredInterviewDate: {
       type: Date
     },
-    avatar: {
-      type: String,
-      default: ''
-    },
     bio: {
       type: String,
       default: ''
