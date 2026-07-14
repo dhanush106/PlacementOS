@@ -46,20 +46,16 @@ export const connectDB = async () => {
 
     logger.info(`MongoDB Connected: ${conn.connection.host}`);
 
-    // Seed initial data
     await seedQuotes();
 
     return conn;
-  } catch (error) {
-    logger.error(`Database Connection Error: ${error.message}`);
 
-    if (!reconnectTimer) {
-      logger.info('Retrying connection in 5 seconds...');
-      reconnectTimer = setTimeout(() => {
-        reconnectTimer = null;
-        connectDB().catch(() => {});
-      }, 5000);
-    }
+  } catch (err) {
+
+    logger.error("MongoDB connection failed:", err);
+
+    // VERY IMPORTANT
+    throw err;
   }
 };
 
