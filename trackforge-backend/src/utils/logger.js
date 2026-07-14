@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import winston from 'winston';
+import fs from "fs";
+import path from "path";
+import winston from "winston";
 
 const levels = {
   error: 0,
@@ -11,48 +11,81 @@ const levels = {
 };
 
 const colors = {
-  error: 'red',
-  warn: 'yellow',
-  info: 'green',
-  http: 'magenta',
-  debug: 'white',
+  error: "red",
+  warn: "yellow",
+  info: "green",
+  http: "magenta",
+  debug: "white",
 };
-
-const isProduction = process.env.NODE_ENV === 'production';
 
 winston.addColors(colors);
 
-// Create the local logs directory only in development. Vercel serverless
-// environments should never try to create or write project-local log files.
-if (!isProduction && !fs.existsSync('logs')) {
-  fs.mkdirSync('logs', { recursive: true });
+// Detect serverless environments
+const isServerless =
+  !!process.env.VERCEL ||
+  !!process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  !!process.env.RENDER ||
+  !!process.env.RAILWAY_ENVIRONMENT;
+
+const isDevelopment = process.env.NODE_ENV !== "production";
+
+// Create logs directory only for local development
+if (!isServerless) {
+  try {
+    const logsDir = path.resolve(process.cwd(), "logs");
+
+    if (!fs.existsSync(logsDir)) {
+      fs.mkdirSync(logsDir, { recursive: true });
+    }
+  } catch (err) {
+    console.warn("⚠️ Unable to create logs directory:", err.message);
+  }
 }
 
-const format = winston.format.combine(
-  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
-  isProduction ? winston.format.uncolorize() : winston.format.colorize({ all: true }),
-  winston.format.printf((info) => `${info.timestamp} ${info.level}: ${info.message}`)
+const logFormat = winston.format.combine(
+  winston.format.timestamp({
+    format: "YYYY-MM-DD HH:mm:ss",
+  }),
+  isDevelopment
+    ? winston.format.colorize({ all: true })
+    : winston.format.uncolorize(),
+  winston.format.printf(
+    ({ timestamp, level, message }) =>
+      `${timestamp} ${level}: ${message}`
+  )
 );
 
 const transports = [
-  new winston.transports.Console()
+  new winston.transports.Console({
+    handleExceptions: true,
+  }),
 ];
 
-if (!isProduction) {
+// File logging only on local machine
+if (!isServerless) {
+  const logsDir = path.resolve(process.cwd(), "logs");
+
   transports.push(
     new winston.transports.File({
-      filename: path.join('logs', 'error.log'),
-      level: 'error',
-    }),
-    new winston.transports.File({ filename: path.join('logs', 'combined.log') })
+      filename: path.join(logsDir, "error.log"),
+      level: "error",
+      handleExceptions: true,
+    })
+  );
+
+  transports.push(
+    new winston.transports.File({
+      filename: path.join(logsDir, "combined.log"),
+    })
   );
 }
 
 const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
   levels,
-  format,
+  level: isDevelopment ? "debug" : "info",
+  format: logFormat,
   transports,
+  exitOnError: false,
 });
 
 export default logger;

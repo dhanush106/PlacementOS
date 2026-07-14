@@ -18,30 +18,53 @@ import { checkDatabaseHealth } from './config/database.js';
 
 const app = express();
 
-const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173,https://placement-os-rmrw.vercel.app,https://placement-os-seven.vercel.app')
-  .split(',')
-  .map((origin) => origin.trim())
+const allowedOrigins = (
+  process.env.CORS_ORIGIN ||
+  "http://localhost:5173,http://127.0.0.1:5173,https://placement-os-rmrw.vercel.app,https://placement-os-seven.vercel.app"
+)
+  .split(",")
+  .map(origin => origin.trim())
   .filter(Boolean);
 
-const isAllowedOrigin = (origin) => {
-  if (!origin) return true;
-  return allowedOrigins.includes(origin) || /(?:^https:\/\/.+\.vercel\.app$)|(?:^http:\/\/localhost:\d+$)/i.test(origin);
-};
-
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (isAllowedOrigin(origin)) {
-      callback(null, true);
-      return;
+  origin(origin, callback) {
+    // Allow requests without Origin (Postman, curl, health checks)
+    if (!origin) {
+      return callback(null, true);
     }
 
-    callback(null, false);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    console.error(`❌ Blocked CORS request from: ${origin}`);
+    return callback(new Error("Not allowed by CORS"));
   },
+
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-  optionsSuccessStatus: 204
+
+  methods: [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+  ],
+
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-Requested-With",
+    "Accept",
+  ],
+
+  optionsSuccessStatus: 204,
 };
+
+// CORS Configuration
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Security Headers
 app.use(
@@ -53,9 +76,7 @@ app.use(
 // Serve Static Uploads
 app.use('/uploads', express.static('uploads'));
 
-// CORS Configuration
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+
 
 // Body Parser
 app.use(express.json());
