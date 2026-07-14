@@ -1731,3 +1731,4 @@
 2026-07-12 23:21:25:2125 [35mhttp[39m: [35mGET /api/leetcode/analytics - IP: ::1[39m
 2026-07-12 23:21:25:2125 [35mhttp[39m: [35mGET /api/leetcode/analytics - IP: ::1[39m
 2026-07-14 21:36:13:3613 [32minfo[39m: [32mtest log[39m
+2026-07-14 21:36:26:3626 [32minfo[39m: [32mSMTP credentials not fully set. Email service will run in Console/Mock mode.[39m
