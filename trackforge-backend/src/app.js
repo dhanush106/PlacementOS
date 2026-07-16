@@ -91,21 +91,29 @@ app.use((req, res, next) => {
 });
 
 // Health Check Endpoint
-// app.get('/api/health', (req, res) => {
-//   const dbHealth = checkDatabaseHealth();
-//   res.status(dbHealth.status === 'healthy' ? 200 : 503).json({
-//     status: dbHealth.status === 'healthy' ? 'success' : 'error',
-//     timestamp: new Date(),
-//     services: {
-//       database: dbHealth,
-//       server: 'healthy'
-//     }
-//   });
-// });
-app.get("/api/health", (req, res) => {
+app.get('/api/health', (req, res) => {
   const dbHealth = checkDatabaseHealth();
-  res.status(200).json({ ok: true, db: dbHealth });
+  res.status(dbHealth.status === 'healthy' ? 200 : 503).json({
+    status: dbHealth.status === 'healthy' ? 'success' : 'error',
+    timestamp: new Date(),
+    services: {
+      database: dbHealth,
+      server: 'healthy'
+    }
+  });
 });
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "TrackForge API is running 🚀",
+  });
+});
+
+// app.get("/api/health", (req, res) => {
+//   const dbHealth = checkDatabaseHealth();
+//   res.status(200).json({ ok: true, db: dbHealth });
+// });
 
 // API Routes
 app.use('/api/auth', authRoutes);
