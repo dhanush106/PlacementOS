@@ -49,8 +49,9 @@ export const connectDB = async () => {
   }
 
   console.log("Before Mongoose.connect")
+  console.log("MONGO_URI:", MONGO_URI)
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    const conn = await mongoose.connect(MONGO_URI);
     console.log("After Mongoose.connect")
 
     console.log("✅ MongoDB Connected");
