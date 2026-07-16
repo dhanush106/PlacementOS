@@ -28,6 +28,9 @@ async function seedQuotes() {
   }
 }
 export const connectDB = async () => {
+  console.log("VERCEL:", process.env.VERCEL);
+  console.log("NODE_ENV:", process.env.NODE_ENV);
+  console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
   console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
   console.log("Connecting to MongoDB...");
 
