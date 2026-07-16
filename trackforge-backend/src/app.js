@@ -103,11 +103,8 @@ app.use((req, res, next) => {
 //   });
 // });
 app.get("/api/health", (req, res) => {
-  console.log("Health endpoint reached");
-
-  res.status(200).json({
-    ok: true
-  });
+  const dbHealth = checkDatabaseHealth();
+  res.status(200).json({ ok: true, db: dbHealth });
 });
 
 // API Routes
