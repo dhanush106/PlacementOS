@@ -1,54 +1,57 @@
-console.log("APP>JS IS LOADED");
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import logger from './utils/logger.js';
-import authRoutes from './routes/auth.js';
-import userRoutes from './routes/users.js';
-import dashboardRoutes from './routes/dashboard.js';
-import plannerRoutes from './routes/planner.js';
-import habitRoutes from './routes/habits.js';
-import leetcodeRoutes from './routes/leetcode.js';
-import subjectRoutes from './routes/subjects.js';
-import pomodoroRoutes from './routes/pomodoro.js';
-import systemDesignRoutes from './routes/systemDesign.js';
-import kanbanRoutes from './routes/kanban.js';
-import analyticsRoutes from './routes/analytics.js';
-import { errorHandler } from './middleware/errorHandler.js';
-import { checkDatabaseHealth } from './config/database.js';
+console.log("APP.JS IS LOADED");
+
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+
+import logger from "./utils/logger.js";
+
+import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/users.js";
+import dashboardRoutes from "./routes/dashboard.js";
+import plannerRoutes from "./routes/planner.js";
+import habitRoutes from "./routes/habits.js";
+import leetcodeRoutes from "./routes/leetcode.js";
+import subjectRoutes from "./routes/subjects.js";
+import pomodoroRoutes from "./routes/pomodoro.js";
+import systemDesignRoutes from "./routes/systemDesign.js";
+import kanbanRoutes from "./routes/kanban.js";
+import analyticsRoutes from "./routes/analytics.js";
+
+import { errorHandler } from "./middleware/errorHandler.js";
+import { checkDatabaseHealth } from "./config/database.js";
 
 const app = express();
 
-// const allowedOrigins = (
-//   process.env.CORS_ORIGIN ||
-//   "http://localhost:5173,http://127.0.0.1:5173,https://placement-os-rmrw.vercel.app,https://placement-os-seven.vercel.app"
-// )
-//   .split(",")
-//   .map(origin => origin.trim())
-//   .filter(Boolean);
+/* -------------------------------------------------------------------------- */
+/*                                  CORS                                      */
+/* -------------------------------------------------------------------------- */
 
-const allowedOriginRegex = /^https:\/\/.*\.vercel\.app$/;
-const allowedOrigins = allowedOriginRegex;
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+];
+
+const vercelRegex = /^https:\/\/.*\.vercel\.app$/;
 
 const corsOptions = {
   origin(origin, callback) {
-    console.log("Incoming Origin:", origin);
-    console.log("Allowed Origins:", allowedOrigins);
-
+    // Allow Postman, mobile apps, curl, etc.
     if (!origin) {
-        console.log("No origin");
-        return callback(null, true);
+      return callback(null, true);
     }
 
-    if (allowedOrigins.includes(origin)) {
-        console.log("✅ Allowed:", origin);
-        return callback(null, true);
+    if (
+      allowedOrigins.includes(origin) ||
+      vercelRegex.test(origin)
+    ) {
+      return callback(null, true);
     }
 
-    console.log("❌ Blocked:", origin);
+    logger.warn(`Blocked CORS request from: ${origin}`);
 
-    callback(new Error("Not allowed by CORS"));
-},
+    return callback(new Error("Not allowed by CORS"));
+  },
 
   credentials: true,
 
@@ -71,78 +74,100 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-// CORS Configuration
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.options("*", cors(corsOptions));
 
-// Security Headers
+/* -------------------------------------------------------------------------- */
+/*                               SECURITY                                     */
+/* -------------------------------------------------------------------------- */
+
 app.use(
   helmet({
     crossOriginResourcePolicy: false,
-    crossOriginEmbedderPolicy: false
+    crossOriginEmbedderPolicy: false,
   })
 );
 
-// Body Parser
-app.use(express.json());
+/* -------------------------------------------------------------------------- */
+/*                               BODY PARSER                                  */
+/* -------------------------------------------------------------------------- */
+
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// Request Logger Middleware
+/* -------------------------------------------------------------------------- */
+/*                              REQUEST LOGGER                                */
+/* -------------------------------------------------------------------------- */
+
 app.use((req, res, next) => {
-  logger.http(`${req.method} ${req.originalUrl} - IP: ${req.ip}`);
+  logger.http(`${req.method} ${req.originalUrl} | ${req.ip}`);
   next();
 });
 
-// Health Check Endpoint
-app.get('/api/health', (req, res) => {
+/* -------------------------------------------------------------------------- */
+/*                               HEALTH CHECK                                 */
+/* -------------------------------------------------------------------------- */
+
+app.get("/api/health", (req, res) => {
   const dbHealth = checkDatabaseHealth();
-  res.status(dbHealth.status === 'healthy' ? 200 : 503).json({
-    status: dbHealth.status === 'healthy' ? 'success' : 'error',
-    timestamp: new Date(),
+
+  return res.status(dbHealth.status === "healthy" ? 200 : 503).json({
+    success: dbHealth.status === "healthy",
+    timestamp: new Date().toISOString(),
     services: {
+      server: "healthy",
       database: dbHealth,
-      server: 'healthy'
-    }
+    },
   });
 });
 
+/* -------------------------------------------------------------------------- */
+/*                                  ROOT                                      */
+/* -------------------------------------------------------------------------- */
+
 app.get("/", (req, res) => {
+  console.log("Root endpoint hit");
   res.status(200).json({
     success: true,
     message: "TrackForge API is running 🚀",
+    version: "1.0.0",
   });
 });
 
-// app.get("/api/health", (req, res) => {
-//   const dbHealth = checkDatabaseHealth();
-//   res.status(200).json({ ok: true, db: dbHealth });
-// });
+/* -------------------------------------------------------------------------- */
+/*                                 ROUTES                                     */
+/* -------------------------------------------------------------------------- */
 
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/planner', plannerRoutes);
-app.use('/api/habits', habitRoutes);
-app.use('/api/leetcode', leetcodeRoutes);
-app.use('/api/subjects', subjectRoutes);
-app.use('/api/pomodoro', pomodoroRoutes);
-app.use('/api/system-design', systemDesignRoutes);
-app.use('/api/kanban', kanbanRoutes);
-app.use('/api/analytics', analyticsRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/planner", plannerRoutes);
+app.use("/api/habits", habitRoutes);
+app.use("/api/leetcode", leetcodeRoutes);
+app.use("/api/subjects", subjectRoutes);
+app.use("/api/pomodoro", pomodoroRoutes);
+app.use("/api/system-design", systemDesignRoutes);
+app.use("/api/kanban", kanbanRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
-// Catch-all route for unmatched paths (404)
-app.use((req, res, next) => {
+/* -------------------------------------------------------------------------- */
+/*                                   404                                      */
+/* -------------------------------------------------------------------------- */
+
+app.use((req, res) => {
   res.status(404).json({
-    status: 'error',
+    success: false,
     error: {
-      code: 'NOT_FOUND',
-      message: `Cannot ${req.method} ${req.originalUrl}`
-    }
+      code: "NOT_FOUND",
+      message: `Cannot ${req.method} ${req.originalUrl}`,
+    },
   });
 });
 
-// Global Error Handler
+/* -------------------------------------------------------------------------- */
+/*                             GLOBAL ERROR HANDLER                           */
+/* -------------------------------------------------------------------------- */
+
 app.use(errorHandler);
 
 export default app;
