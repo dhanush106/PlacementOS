@@ -1,6 +1,7 @@
 import './config/env.js';
 import serverless from 'serverless-http';
 import app from './app.js';
+import mongoose from "mongoose";
 import { connectDB } from './config/database.js';
 import logger from './utils/logger.js';
 import { startRecurringTaskScheduler } from './services/recurringTaskService.js';
