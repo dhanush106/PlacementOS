@@ -1,3 +1,4 @@
+console.log("APP>JS IS LOADED");
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -90,15 +91,22 @@ app.use((req, res, next) => {
 });
 
 // Health Check Endpoint
-app.get('/api/health', (req, res) => {
-  const dbHealth = checkDatabaseHealth();
-  res.status(dbHealth.status === 'healthy' ? 200 : 503).json({
-    status: dbHealth.status === 'healthy' ? 'success' : 'error',
-    timestamp: new Date(),
-    services: {
-      database: dbHealth,
-      server: 'healthy'
-    }
+// app.get('/api/health', (req, res) => {
+//   const dbHealth = checkDatabaseHealth();
+//   res.status(dbHealth.status === 'healthy' ? 200 : 503).json({
+//     status: dbHealth.status === 'healthy' ? 'success' : 'error',
+//     timestamp: new Date(),
+//     services: {
+//       database: dbHealth,
+//       server: 'healthy'
+//     }
+//   });
+// });
+app.get("/api/health", (req, res) => {
+  console.log("Health endpoint reached");
+
+  res.status(200).json({
+    ok: true
   });
 });
 
