@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import logger from '../utils/logger.js';
 import Quote from '../models/Quote.js';
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/PlacementOS';
+const MONGO_URI = process.env.MONGO_URI;
 let reconnectTimer = null;
 
 const initialQuotes = [
@@ -34,6 +34,10 @@ export const connectDB = async () => {
   console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
   console.log("Connecting to MongoDB...");
 
+  const MONGO_URI = process.env.MONGO_URI;
+  if (!MONGO_URI) {
+    throw new Error("MONGO_URI is missing");
+  }
   if (mongoose.connection.readyState === 1) {
     console.log("Already connected");
     return mongoose.connection;

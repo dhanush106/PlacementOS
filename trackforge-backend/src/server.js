@@ -67,7 +67,7 @@ const serverlessHandler = serverless(app);
 
 export const handler = async (req, res) => {
   console.log("🚀 HANDLER EXECUTED");
-  // await ensureDatabaseConnection();
+  await ensureDatabaseConnection();
   return serverlessHandler(req, res);
 };
 
