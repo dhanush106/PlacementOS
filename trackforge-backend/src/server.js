@@ -1,3 +1,4 @@
+console.log("🚀 SERVER.JS LOADED");
 import './config/env.js';
 import serverless from 'serverless-http';
 import app from './app.js';
@@ -65,6 +66,7 @@ export const startBackgroundServices = async () => {
 const serverlessHandler = serverless(app);
 
 export const handler = async (req, res) => {
+  console.log("🚀 HANDLER EXECUTED");
   await ensureDatabaseConnection();
   return serverlessHandler(req, res);
 };
