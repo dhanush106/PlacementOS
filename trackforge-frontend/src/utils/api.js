@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://placement-os-fdyy.vercel.app/api/',
+  baseURL: 'https://placement-os-fdyy.vercel.app/api',
   headers: {
     'Content-Type': 'application/json',
   },
