@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://placement-os-seven.vercel.app/api',
+  baseURL: 'https://placement-os-roan.vercel.app/api/',
   headers: {
     'Content-Type': 'application/json',
   },
