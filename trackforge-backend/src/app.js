@@ -19,13 +19,16 @@ import { checkDatabaseHealth } from './config/database.js';
 
 const app = express();
 
-const allowedOrigins = (
-  process.env.CORS_ORIGIN ||
-  "http://localhost:5173,http://127.0.0.1:5173,https://placement-os-rmrw.vercel.app,https://placement-os-seven.vercel.app"
-)
-  .split(",")
-  .map(origin => origin.trim())
-  .filter(Boolean);
+// const allowedOrigins = (
+//   process.env.CORS_ORIGIN ||
+//   "http://localhost:5173,http://127.0.0.1:5173,https://placement-os-rmrw.vercel.app,https://placement-os-seven.vercel.app"
+// )
+//   .split(",")
+//   .map(origin => origin.trim())
+//   .filter(Boolean);
+
+const allowedOriginRegex = /^https:\/\/.*\.vercel\.app$/;
+const allowedOrigins = allowedOriginRegex;
 
 const corsOptions = {
   origin(origin, callback) {
