@@ -65,20 +65,19 @@ export const startBackgroundServices = async () => {
 
 const serverlessHandler = serverless(app);
 
-// export const handler = async (req, res) => {
-//   console.log("🚀 HANDLER EXECUTED");
-//   await ensureDatabaseConnection();
-//   return serverlessHandler(req, res);
-// };
-export const handler = async (req, res) => {
-  try {
-    await ensureDatabaseConnection();
-  } catch (err) {
-    logger.error("DB connection failed, continuing without DB:", err);
-    // don't throw — let the request proceed; health/other routes can check DB state themselves
-  }
-  return serverlessHandler(req, res);
-};
+export default async function handler(req, res) {
+  console.log("Handler started");
+
+  await ensureDatabaseConnection();
+
+  console.log("Calling serverlessHandler");
+
+  const result = await serverlessHandler(req, res);
+
+  console.log("serverlessHandler finished");
+
+  return result;
+}
 
 if (isDirectRun) {
   const PORT = Number(process.env.PORT || 5000);
