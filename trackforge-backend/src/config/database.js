@@ -50,10 +50,8 @@ export const connectDB = async () => {
 
   console.log("Before Mongoose.connect")
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
-    });
-  console.log("After Mongoose.connect")
+    const conn = await mongoose.connect(process.env.MONGO_URI);
+    console.log("After Mongoose.connect")
 
     console.log("✅ MongoDB Connected");
     console.log("Host:", conn.connection.host);
